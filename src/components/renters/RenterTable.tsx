@@ -24,13 +24,28 @@ import { useState } from "react";
 
 interface RenterTableProps {
   renters: RenterType[];
+  setRenters: React.Dispatch<React.SetStateAction<RenterType[]>>;
 }
 
-export default function RenterTable({ renters }: RenterTableProps) {
+
+
+
+
+export default function RenterTable({ renters , setRenters}: RenterTableProps) {
   const BASE_URL = "http://localhost:3000";
-  const DEFAULT_AVATAR = "/default-avatar.png";
+  const DEFAULT_AVATAR = "/default-avatar.png";  
   const [selectedRenter, setSelectedRenter] = useState<RenterType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+const [renterToToggle, setRenterToToggle] = useState<RenterType | null>(null);
+
+
+const handleBlockClick = (renter: RenterType) => {
+  setRenterToToggle(renter);
+  setConfirmModalOpen(true);
+};
+
 
   const renterColumns: ColumnDef<RenterType>[] = [
     {
@@ -99,7 +114,30 @@ export default function RenterTable({ renters }: RenterTableProps) {
       header: "Shop Address",
       accessorKey: "shopAddress",
     },
+
+    {
+      header: "Status",
+      cell: ({ row }) => {
+        const renter = row.original;
+        return (
+          <Button
+            variant={renter.isBlocked ? "destructive" : "default"}
+            className={`text-xs ${!renter.isBlocked ? "text-black border-gray-300" : ""}`}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row modal open
+              handleBlockClick(renter); // Custom function to open confirm dialog
+            }}
+          >
+            {renter.isBlocked ? "Unblock" : "Block Renter"}
+          </Button>
+        );
+      },
+    }
+
+
   ];
+
+
 
   const table = useReactTable({
     data: renters,
@@ -174,7 +212,7 @@ export default function RenterTable({ renters }: RenterTableProps) {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-3xl rounded-2xl shadow-2xl bg-white p-8">
           <DialogHeader>
-          
+
             <DialogTitle className="text-2xl font-bold text-primary text-gray-800">Renter Details</DialogTitle>
             <DialogClose
               onClick={closeModal}
@@ -221,6 +259,71 @@ export default function RenterTable({ renters }: RenterTableProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+
+      <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
+        <DialogContent className="rounded-xl max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {renterToToggle?.isBlocked ? "Unblock Renter?" : "Block Renter?"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-gray-600">
+            Are you sure you want to{" "}
+            <span className="font-bold">
+              {renterToToggle?.isBlocked ? "Unblock" : "Block"}
+            </span>{" "}
+            {renterToToggle?.fullName}?
+          </div>
+          <div className="flex justify-end mt-4 gap-2">
+            <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant={renterToToggle?.isBlocked ? "default" : "destructive"}
+               className={`text-xs ${renterToToggle?.isBlocked ? "text-black border-gray-300" : ""}`}
+              onClick={async () => {
+                if (!renterToToggle) return;
+
+                try {
+                  const token = localStorage.getItem("token");
+                  const res = await fetch(`http://localhost:3000/api/admin/toggleBlockOwner/${renterToToggle._id}`, {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                  });
+
+                  if (!res.ok) throw new Error("Failed to update block status");
+
+                  // Optimistic UI update
+                  setConfirmModalOpen(false);
+                  setRenterToToggle(null);
+
+                  // Update UI
+                  const updatedRenters = renters.map((r) =>
+                    r._id === renterToToggle._id
+                      ? { ...r, isBlocked: !r.isBlocked }
+                      : r
+                  );
+                  setRenters(updatedRenters);
+
+                  // Show success toast/snackbar
+                  alert(`Renter has been ${renterToToggle.isBlocked ? "unblocked" : "blocked"} successfully`);
+                } catch (err) {
+                  alert("Something went wrong!");
+                }
+              }}
+            >
+              {renterToToggle?.isBlocked ? "Unblock" : "Block"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
+
+

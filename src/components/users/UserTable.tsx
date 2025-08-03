@@ -1,9 +1,8 @@
 "use client";
 
-import React, { JSX, useState } from "react";
+import React, { useState } from "react";
 import {
   ColumnFiltersState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -11,6 +10,7 @@ import {
   SortingState,
   useReactTable,
   VisibilityState,
+  flexRender,
 } from "@tanstack/react-table";
 import { userColumns } from "./userColumns";
 import { Input } from "@/components/ui/input";
@@ -28,7 +28,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -41,18 +41,44 @@ import { UserType } from "@/types/User";
 
 interface UserTableProps {
   users: UserType[];
+  setUsers: React.Dispatch<React.SetStateAction<UserType[]>>;
 }
 
-export default function UserTable({ users }: UserTableProps) {
+export default function UserTable({ users, setUsers }: UserTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [userDetails, setUserDetails] = useState<UserType | null>(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [userToToggle, setUserToToggle] = useState<UserType | null>(null);
+
+  const columns = [
+    ...userColumns,
+    {
+      header: "Status",
+      cell: ({ row }: any) => {
+        const user = row.original;
+        return (
+          <Button
+            variant={user.isBlocked ? "destructive" : "outline"}
+            className={`text-xs ${!user.isBlocked ? "text-black border border-gray-400" : ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setUserToToggle(user);
+              setConfirmModalOpen(true);
+            }}
+          >
+            {user.isBlocked ? "Unblock" : "Block User"}
+          </Button>
+        );
+      },
+    },
+  ];
 
   const table = useReactTable({
     data: users,
-    columns: userColumns,
+    columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -66,11 +92,6 @@ export default function UserTable({ users }: UserTableProps) {
   const handleRowClick = (user: UserType) => {
     setUserDetails(user);
     setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setUserDetails(null);
   };
 
   const DEFAULT_AVATAR = "/default-avatar.png";
@@ -89,7 +110,7 @@ export default function UserTable({ users }: UserTableProps) {
 
   return (
     <>
-      {/* Filters & Columns */}
+      {/* Filter Section */}
       <div className="flex items-center justify-between py-4">
         <div className="flex items-center space-x-2">
           <Input
@@ -105,7 +126,6 @@ export default function UserTable({ users }: UserTableProps) {
             className="max-w-sm border"
           />
         </div>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
@@ -113,7 +133,7 @@ export default function UserTable({ users }: UserTableProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {table.getAllColumns().filter((col) => col.getCanHide()).map((col) => (
+            {table.getAllColumns().filter(col => col.getCanHide()).map(col => (
               <DropdownMenuCheckboxItem
                 key={col.id}
                 checked={col.getIsVisible()}
@@ -130,9 +150,9 @@ export default function UserTable({ users }: UserTableProps) {
       <div className="w-full overflow-auto rounded-xl shadow-lg bg-white border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id} className="bg-gray-100 sticky top-0 z-10">
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <TableHead key={header.id} className="py-3 px-4 text-gray-700 font-semibold">
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
@@ -142,13 +162,13 @@ export default function UserTable({ users }: UserTableProps) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map(row => (
                 <TableRow
-                  onClick={() => handleRowClick(row.original)}
                   key={row.id}
+                  onClick={() => handleRowClick(row.original)}
                   className="cursor-pointer hover:bg-primary/10 transition even:bg-gray-50"
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id} className="py-2 px-4 truncate" title={String(cell.getValue())}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -157,9 +177,7 @@ export default function UserTable({ users }: UserTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={userColumns.length} className="h-24 text-center">
-                  No users found.
-                </TableCell>
+                <TableCell colSpan={columns.length} className="h-24 text-center">No users found.</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -181,14 +199,62 @@ export default function UserTable({ users }: UserTableProps) {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Confirm Block/Unblock Modal */}
+      <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
+        <DialogContent className="rounded-xl max-w-md">
+          <DialogHeader>
+            <DialogTitle>{userToToggle?.isBlocked ? "Unblock User?" : "Block User?"}</DialogTitle>
+          </DialogHeader>
+          <div className="text-gray-600">
+            Are you sure you want to <strong>{userToToggle?.isBlocked ? "unblock" : "block"}</strong>{" "}
+            {userToToggle?.fullName}?
+          </div>
+          <div className="flex justify-end mt-4 gap-2">
+            <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>Cancel</Button>
+            <Button
+               className={`text-xs ${userToToggle?.isBlocked ? "text-black border border-gray-400" : ""}`}
+          
+              variant={userToToggle?.isBlocked ? "default" : "destructive"}
+              onClick={async () => {
+                if (!userToToggle) return;
+
+                try {
+                  const token = localStorage.getItem("token");
+                  const res = await fetch(`http://localhost:3000/api/admin/toggleBlockUser/${userToToggle._id}`, {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                  });
+
+                  if (!res.ok) throw new Error("Failed to update status");
+
+                  setUsers(prev =>
+                    prev.map(u => u._id === userToToggle._id ? { ...u, isBlocked: !u.isBlocked } : u)
+                  );
+
+                  alert(`User has been ${userToToggle.isBlocked ? "unblocked" : "blocked"} successfully`);
+                } catch {
+                  alert("Something went wrong!");
+                } finally {
+                  setConfirmModalOpen(false);
+                  setUserToToggle(null);
+                }
+              }}
+            >
+              {userToToggle?.isBlocked ? "Unblock" : "Block"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* User Details Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-3xl rounded-2xl shadow-2xl bg-white p-8">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-primary text-gray-800">User Details</DialogTitle>
-            <DialogClose onClick={closeModal} className="absolute right-3.5 top-3.5 rounded-full bg-gray-200 hover:bg-gray-300 p-2 h-5 w-5">
-              {/* <X className="h-5 w-5" /> */}
-            </DialogClose>
+            <DialogClose onClick={() => setIsModalOpen(false)} />
           </DialogHeader>
           {userDetails ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
@@ -197,19 +263,16 @@ export default function UserTable({ users }: UserTableProps) {
                 <span className="mt-2 text-gray-600 text-lg font-semibold">{userDetails.fullName}</span>
               </div>
               <div>
-                <div className="mb-2"><span className="font-semibold">Email:</span> {userDetails.email}</div>
-                <div className="mb-2"><span className="font-semibold">Phone:</span> {userDetails.phoneNumber}</div>
-                {/* <div className="mb-2"><span className="font-semibold">Role:</span> {userDetails.role}</div> */}
-                <div className="mb-2"><span className="font-semibold">Area:</span> {userDetails.area}</div>
-                {/* <div className="mb-2"><span className="font-semibold">Created At:</span> {new Date(userDetails.createdAt).toLocaleString()}</div> */}
-                {/* <div className="mb-2"><span className="font-semibold">Updated At:</span> {new Date(userDetails.updatedAt).toLocaleString()}</div> */}
+                <div className="mb-2"><strong>Email:</strong> {userDetails.email}</div>
+                <div className="mb-2"><strong>Phone:</strong> {userDetails.phoneNumber}</div>
+                <div className="mb-2"><strong>Area:</strong> {userDetails.area}</div>
               </div>
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">No user details available</div>
           )}
           <div className="flex justify-end mt-6 pt-4 border-t">
-            <Button onClick={closeModal} variant="outline">Close</Button>
+            <Button onClick={() => setIsModalOpen(false)} variant="outline">Close</Button>
           </div>
         </DialogContent>
       </Dialog>

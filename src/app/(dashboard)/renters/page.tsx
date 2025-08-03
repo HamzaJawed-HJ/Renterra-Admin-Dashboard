@@ -60,7 +60,7 @@ const RenterData = () => {
     <div className="max-w-7xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-2">Renter</h1>
       <p className="text-gray-600 mb-4">View all Registered Renters</p>
-      <RenterTable renters={renters} /> {/* Pass renters (owners) to RenterTable */}
+      <RenterTable renters={renters} setRenters={setRenters} /> {/* Pass renters (owners) to RenterTable */}
     </div>
   );
 };

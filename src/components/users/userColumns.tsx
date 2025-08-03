@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { UserType } from "@/types/User";
 
 export const userColumns: ColumnDef<UserType>[] = [
+
+
+
+  
   {
     accessorKey: "fullName",
     header: ({ column }) => (
@@ -48,15 +52,7 @@ export const userColumns: ColumnDef<UserType>[] = [
       <div className='font-mono text-sm'>{row.getValue("cnic")}</div>
     ),
   },
-  // {
-  //   accessorKey: "role",
-  //   header: "Role",
-  //   cell: ({ row }) => (
-  //     <div className='capitalize bg-gray-100 px-2 py-1 rounded-full text-xs inline-block'>
-  //       {row.getValue("role")}
-  //     </div>
-  //   ),
-  // },
+
   {
     accessorKey: "profilePicture",
     header: "Profile Picture",
@@ -89,6 +85,7 @@ export const userColumns: ColumnDef<UserType>[] = [
       );
     },
   },
+
   
  
 ];

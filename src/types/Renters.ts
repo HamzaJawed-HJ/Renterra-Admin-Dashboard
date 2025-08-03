@@ -10,6 +10,8 @@ export type RenterType = {
   role: string;
   cnicPicture?: string;
   profilePicture?: string;
+
+  isBlocked: boolean;
   createdAt?: string;
   updatedAt?: string;
   password?: string;
