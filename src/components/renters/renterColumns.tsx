@@ -1,0 +1,125 @@
+"use client";
+
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { RenterType } from "@/types/Renters";
+
+// Rename `userColumns` to `renterColumns` as it's for renters
+export const renterColumns: ColumnDef<RenterType>[] = [
+  {
+    accessorKey: "fullName",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Full Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("fullName")}</div>
+    ),
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Email
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "phoneNumber",
+    header: "Phone Number",
+    cell: ({ row }) => (
+      <div className="font-mono">{row.getValue("phoneNumber")}</div>
+    ),
+  },
+  {
+    accessorKey: "shopName",
+    header: "Shop Name",
+    cell: ({ row }) => (
+      <div className="max-w-[200px] truncate">{row.getValue("shopName")}</div>
+    ),
+  },
+  {
+    accessorKey: "cnic",
+    header: "CNIC",
+    cell: ({ row }) => (
+      <div className="font-mono text-sm">{row.getValue("cnic")}</div>
+    ),
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => (
+      <div className="capitalize bg-gray-100 px-2 py-1 rounded-full text-xs inline-block">
+        {row.getValue("role")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "profilePicture",
+    header: "Profile Picture",
+  cell: ({ row }) => {
+  const value = row.getValue("profilePicture");
+  return value ? (
+    <img
+      src={typeof value === 'string' ? `/uploads/${value}` : ''}
+      alt="Profile"
+      className="w-10 h-10 rounded-full object-cover border"
+    />
+  ) : (
+    <span className="text-xs text-gray-400">N/A</span>
+  );
+},
+
+  },
+  {
+    accessorKey: "cnicPicture",
+    header: "CNIC Picture",
+    cell: ({ row }) => {
+  const value = row.getValue("cnicPicture");
+  return value ? (
+    <img
+      src={typeof value === 'string' ? `/uploads/${value}` : ''}
+      alt="CNIC"
+      className="w-10 h-10 rounded object-cover border"
+    />
+  ) : (
+    <span className="text-xs text-gray-400">N/A</span>
+  );
+},
+
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const value = row.getValue("createdAt");
+      return value ? new Date(value as string).toLocaleString() : <span className="text-xs text-gray-400">N/A</span>;
+    },
+  },
+  {
+    accessorKey: "updatedAt",
+    header: "Updated At",
+    cell: ({ row }) => {
+      const value = row.getValue("updatedAt");
+      return value ? new Date(value as string).toLocaleString() : <span className="text-xs text-gray-400">N/A</span>;
+    },
+  },
+  {
+    accessorKey: "password",
+    header: "Password (Hashed)",
+    cell: ({ row }) => (
+      <span className="text-xs font-mono break-all">{row.getValue("password")}</span>
+    ),
+  },
+];
