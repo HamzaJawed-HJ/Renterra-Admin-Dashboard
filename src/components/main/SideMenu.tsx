@@ -12,7 +12,7 @@ const SideMenu = () => {
   const { user } = useAuth();
   if (!user) return null;
   const navLinks = [
-    { name: "DashBoard", href: "/dashboard", icon: FaAngleDoubleUp },
+    { name: "DashBoard", href: "/", icon: FaAngleDoubleUp },
 
     { name: "users", href: "/users", icon: FaRegUser },
     { name: "renters", href: "/renters", icon: FaRegStickyNote },
