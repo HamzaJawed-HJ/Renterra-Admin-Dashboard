@@ -58,9 +58,10 @@ export const userColumns: ColumnDef<UserType>[] = [
     header: "Profile Picture",
     cell: ({ row }) => {
       const value = row.getValue("profilePicture");
+       const BASE_URL = "http://localhost:3000";
       return value ? (
         <img
-          src={typeof value === 'string' ? `/uploads/${value}` : ''}
+          src={typeof value === 'string' ? `${BASE_URL}/uploads/${value}` : ''}
           alt="Profile"
           className="w-10 h-10 rounded-full object-cover border"
         />
@@ -74,9 +75,10 @@ export const userColumns: ColumnDef<UserType>[] = [
     header: "CNIC Picture",
     cell: ({ row }) => {
       const value = row.getValue("cnicPicture");
+      const BASE_URL = "http://localhost:3000";
       return value ? (
         <img
-          src={typeof value === 'string' ? `/uploads/${value}` : ''}
+          src={typeof value === 'string' ? `${BASE_URL}/uploads/${value}` : ''}
           alt="CNIC"
           className="w-10 h-10 rounded object-cover border"
         />

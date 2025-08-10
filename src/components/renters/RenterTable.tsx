@@ -158,8 +158,8 @@ const handleBlockClick = (renter: RenterType) => {
   const renderImage = (src: string | undefined, alt: string) =>
     src ? (
       <div className="flex flex-col items-center gap-2">
-        <img src={`/uploads/${src}`} alt={alt} className="w-20 h-20 object-cover border rounded-full shadow" />
-        <a href={`/uploads/${src}`} download className="text-xs text-blue-600 underline">Download</a>
+        <img src={`${BASE_URL}/uploads/${src}`} alt={alt} className="w-20 h-20 object-cover border rounded-full shadow" />
+        <a href={`${BASE_URL}/uploads/${src}`} download className="text-xs text-blue-600 underline">Download</a>
       </div>
     ) : (
       <div className="flex flex-col items-center gap-2">

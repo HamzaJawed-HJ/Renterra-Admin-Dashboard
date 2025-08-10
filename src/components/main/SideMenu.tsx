@@ -25,7 +25,7 @@ const SideMenu = () => {
   ];
 
   return (
-    <aside className="shrink-0 w-56 p-2.5 h-full grid content-between gap-5 overflow-y-auto bg-primary rounded-md py-2 pt-20">
+    <aside className="shrink-0 w-56 p-2.5 h-full grid content-between gap-5 overflow-y-auto bg-primary   rounded-md py-2 pt-20">
       <div>
         <h1 className="font-semibold rounded-md my-2 flex items-center capitalize">
           navigation
