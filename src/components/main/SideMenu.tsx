@@ -22,6 +22,16 @@ const SideMenu = () => {
       href: "/renter-requests",
       icon: FaCodePullRequest,
     },
+    {
+      name: "agreements",
+      href: "/agreements",
+      icon: FaDropletSlash,
+    },
+    {
+      name: "reviews",
+      href: "/reviews",
+      icon: FaDashcube,
+    },
   ];
 
   return (
