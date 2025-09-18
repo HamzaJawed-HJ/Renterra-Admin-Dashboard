@@ -39,7 +39,6 @@ jobs:
       - name: Create test-results folder
         run: mkdir -p test-results
 
-
       - name: Run Tests
         run: npm run test -- --maxWorkers=1 #node 16 error Force Jest to run single-threaded on Node 16:
         continue-on-error: false
@@ -47,8 +46,7 @@ jobs:
       - name: Store Test Results
         run: |
             mkdir -p test-results/node-${{ matrix.node-version }}
-            echo "Simulating test results for Node ${{ matrix.node-version }}"
-            > test-results/node-${{ matrix.node-version}}/results.txt
+            echo "Simulating test results for Node ${{ matrix.node-version }}" > test-results/node-${{ matrix.node-version}}/results.txt
         
         
       - name: Upload Test Result
@@ -76,9 +74,12 @@ jobs:
           name: test-results-node-20
           path: test-results/node-20
 
+      - name: Create test-summary folder
+        run: mkdir -p test-summary
+
+
       - name: Combine Test Results
         run: |
-          mkdir -p test-summary
           cat test-results/node-*/results.txt > test-summary/all-results.txt
           echo "✅ All test results combined."
 
