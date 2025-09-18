@@ -36,6 +36,10 @@ jobs:
       - name: Install dependences
         run: npm install
 
+      - name: Create test-results folder
+        run: mkdir -p test-results
+
+
       - name: Run Tests
         run: npm run test
         continue-on-error: false
