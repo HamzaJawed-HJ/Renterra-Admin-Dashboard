@@ -104,7 +104,9 @@ jobs:
       - name: Notify Slack (Simulated)
         run: echo "📢 Slack notification sent':' Production deployment successful for ${{ github.ref_name }}!"
 
-
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
 
 
