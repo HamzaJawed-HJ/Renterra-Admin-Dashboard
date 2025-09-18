@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: ${{ github.workspace }}/.next/
+          path: .next/
 
   deploy_qa:
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: ./next-build
+          path: .next/
 
       - name: Simulate QA deploy
         run: echo "✅ QA deployment using artifact completed!"
@@ -75,7 +75,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: ./next-build
+          path: .next/
 
       - name: Simulate Production deploy
         run: echo "🚀 Production deployment using artifact completed!"
