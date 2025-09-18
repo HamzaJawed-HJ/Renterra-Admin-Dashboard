@@ -32,8 +32,14 @@ jobs:
       - name: build Next-app
         run: npm run build
 
-      - name: Verify build folder
-        run: ls -la . && ls -la .next
+      # - name: Verify build folder
+      #   run: ls -la . && ls -la .next
+      - name: Debug paths
+        run: |
+          pwd
+          ls -la
+          ls -la .next || echo ".next not found here"
+
 
       - name: Upload build on Artifact 
         uses: actions/upload-artifact@v4
