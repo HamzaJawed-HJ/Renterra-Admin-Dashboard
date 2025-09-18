@@ -34,18 +34,18 @@ jobs:
 
       # - name: Verify build folder
       #   run: ls -la . && ls -la .next
-      - name: Debug paths
-        run: |
-          pwd
-          ls -la
-          ls -la .next || echo ".next not found here"
+      # - name: Debug paths
+      #   run: |
+      #     pwd
+      #     ls -la
+      #     ls -la .next || echo ".next not found here"
 
 
       - name: Upload build on Artifact 
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: .next
+          path: ${{ github.workspace }}/.next/**
 
   deploy_qa:
     runs-on: ubuntu-latest
