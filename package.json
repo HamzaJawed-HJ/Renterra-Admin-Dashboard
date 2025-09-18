@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint || echo 'Lint warnings ignored'",
-    "test": "jest --outputFile=test-results/results.json --json"
+    "test": "jest"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

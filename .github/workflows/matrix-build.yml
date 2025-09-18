@@ -47,12 +47,20 @@ jobs:
         run: mkdir -p test-results
 
       - name: Run Tests
-        run: npm run test -- --maxWorkers=1 #node 16 error Force Jest to run single-threaded on Node 16:
-        continue-on-error: false
+        run: |
+            mkdir -p test-results/node-${{ matrix.node-version }}
+            npx jest --maxWorkers=1 \
+            --outputFile=test-results/node-${{ matrix.node-version }}/results.json \
+            --json
+    
 
-      - name: Run Jest Tests
-        run: npm run test --outputFile=test-results/node-${{ matrix.node-version }}/results.json
-        continue-on-error: false
+    #   - name: Run Tests
+    #     run: npm run test -- --maxWorkers=1 #node 16 error Force Jest to run single-threaded on Node 16:
+    #     continue-on-error: false
+
+    #   - name: Run Jest Tests
+    #     run: npm run test --outputFile=test-results/node-${{ matrix.node-version }}/results.json
+    #     continue-on-error: false
         
       - name: Upload Test Result
         uses: actions/upload-artifact@v4
