@@ -1,0 +1,56 @@
+name: Matrix Built
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+    branches: main  
+
+  schedule:
+   - cron: '0 0 * * *' # nightly run at 00:00 UTC
+
+# Cancel superseded runs on the same branch
+concurrency:
+    group: matrix-build-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16 ,18, 20]
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      
+      - name: Node Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{matrix.node-version}}
+          cache: 'npm'
+
+      - name: Install dependences
+        run: npm install
+
+      - name: Run Tests
+        run: npm run test
+        continue-on-error: false
+
+      - name: Store Test Results
+        run: |
+            mkdir -p test-results/node-${{ matrix.node-version }}
+            echo "Simulating test results for Node ${{ matrix.node-version }}"
+            > test-results/node-${{ matrix.node-version}}/results.txt
+        
+        
+      - name: Upload Test Result
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-node-${{ matrix.node-version }}
+          path: test-results/node-${{ matrix.node-version }}
+
+
