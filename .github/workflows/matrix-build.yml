@@ -11,9 +11,9 @@ on:
    - cron: '0 0 * * *' # nightly run at 00:00 UTC
 
 # Cancel superseded runs on the same branch
-# concurrency:
-#     group: matrix-build-${{ github.ref }}
-#     cancel-in-progress: true
+concurrency:
+    group: matrix-build-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
   test:
