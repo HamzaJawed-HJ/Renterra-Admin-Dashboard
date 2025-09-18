@@ -33,7 +33,7 @@ jobs:
         run: npm run build
 
       - name: Upload build on Artifact 
-        uses: actions/upload-artifact@v4.6
+        uses: actions/upload-artifact@v4
         with:
           name: Next Built
           path: out/
