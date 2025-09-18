@@ -21,31 +21,34 @@ jobs:
           cache: 'npm'
 
       - name: Install dependences
+        working-directory: frontend # Adjust to your subdirectory name
         run: npm install
 
       - name: Run Linter
+        working-directory: frontend
         run: npm run lint || true
         
       - name: Run Test
+        working-directory: frontend
         run: npm run test
 
       - name: build Next-app
+        working-directory: frontend
         run: npm run build
 
-      # - name: Verify build folder
-      #   run: ls -la . && ls -la .next
-      # - name: Debug paths
-      #   run: |
-      #     pwd
-      #     ls -la
-      #     ls -la .next || echo ".next not found here"
+      - name: Debug directory structure
+        working-directory: frontend
+        run: |
+            pwd
+            ls -la
+            ls -la .next || echo ".next folder not found"
 
 
       - name: Upload build on Artifact 
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: ${{ github.workspace }}/.next
+          path: frontend/.next
 
   deploy_qa:
     runs-on: ubuntu-latest
