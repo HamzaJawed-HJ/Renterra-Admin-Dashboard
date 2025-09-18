@@ -35,24 +35,33 @@ jobs:
       - name: Verify build folder
         run: ls -la && ls -la .next
           
-      - name: Debug artifact path
+      - name: Debug before upload
         run: |
-          echo "Current dir: $(pwd)"
-          echo "Full path to .next: $(realpath .next)"
-          find .next -type f | head -10  # List first 10 files in .next to confirm contents
+                echo "Listing .next contents:"
+                ls -la .next
+                echo "Counting files in .next:"
+                find .next -type f | wc -l
+                echo "Checking path existence:"
+                test -d .next && echo ".next exists" || echo ".next does not exist"
 
-      # - name: Debug paths
-      #   run: |
-      #     pwd
-      #     ls -la
-      #     ls -la .next || echo ".next not found here"
-
-
-      - name: Upload build on Artifact 
-        uses: actions/upload-artifact@v4.6.2
+      - name: Upload build on Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: .next/**
+          path: .next
+          # if-no-files-found: warn
+          # compression-level: 6
+          # overwrite: false
+          include-hidden-files: true
+
+
+
+
+      # - name: Upload build on Artifact 
+      #   uses: actions/upload-artifact@v4.6.2
+      #   with:
+      #     name: next-build
+      #     path: .next/**
 
   deploy_qa:
     runs-on: ubuntu-latest
