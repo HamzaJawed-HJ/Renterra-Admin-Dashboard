@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read        # Required to access repo files
+  pages: write           # Required to deploy to Pages
+  id-token: write 
+
 concurrency: 
   group: deploy-${{ github.ref }}
   cancel-in-progress: true
@@ -105,9 +110,9 @@ jobs:
         run: echo "📢 Slack notification sent':' Production deployment successful for ${{ github.ref_name }}!"
 
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v4
-
+        with:
+          folder: out             # folder containing static HTML
 
 
 
