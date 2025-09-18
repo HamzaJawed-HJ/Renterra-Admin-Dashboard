@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency: 
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci-Next-App:
     runs-on: ubuntu-latest
@@ -34,7 +38,8 @@ jobs:
 
       - name: Verify build folder
         run: ls -la && ls -la .next
-          
+
+      # debugging check 
       - name: Debug before upload
         run: |
                 echo "Listing .next contents:"
@@ -65,6 +70,12 @@ jobs:
           name: next-build
           path: ./next-build
 
+      # for debugging purpose
+      - name: Debug downloaded artifact
+        run: |
+          echo "Downloaded artifact contents:"
+          ls -la ./next-build
+
       - name: Simulate QA deploy
         run: echo "✅ QA deployment using artifact completed!"
 
@@ -81,8 +92,17 @@ jobs:
           name: next-build
           path: ./next-build
 
+      # for debugging purpose
+      - name: Debug downloaded artifact
+        run: |
+          echo "Downloaded artifact contents:"
+          ls -la ./next-build
+
       - name: Simulate Production deploy
         run: echo "🚀 Production deployment using artifact completed!"
+
+      - name: Notify Slack (Simulated)
+        run: echo "📢 Slack notification sent':' Production deployment successful for ${{ github.ref_name }}!"
 
 
 
