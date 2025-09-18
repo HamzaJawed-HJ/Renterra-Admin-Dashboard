@@ -34,12 +34,18 @@ jobs:
 
       - name: Verify build folder
         run: ls -la . && ls -la .next
-     
-      - name: Debug paths
+          
+      - name: Debug artifact path
         run: |
-          pwd
-          ls -la
-          ls -la .next || echo ".next not found here"
+          echo "Current dir: $(pwd)"
+          echo "Full path to .next: $(realpath .next)"
+          find .next -type f | head -10  # List first 10 files in .next to confirm contents
+
+      # - name: Debug paths
+      #   run: |
+      #     pwd
+      #     ls -la
+      #     ls -la .next || echo ".next not found here"
 
 
       - name: Upload build on Artifact 
