@@ -1,0 +1,79 @@
+name: Multi Branch Deploment
+
+on:
+  push:
+    branches: [dev , main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci-Next-App:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Node Setup
+        uses: actions/setup=node@v4
+        with:
+        node-version: 22
+        cache: 'npm'
+
+      - name: Install dependences
+        uses: npm install
+
+      - name: Run Linter
+        uses: npm run lint
+        
+      - name: Run Test
+        uses: npm run test
+
+      - name: build Next-app
+        uses: npm run build
+
+      - name: Upload build on Artifact 
+        uses: actions/upload-artifact@v4.6
+        with:
+          name: Next Built
+          path: out/
+
+  deploy_qa:
+    runs-on: ubuntu-latest
+    needs: ci-Next-App # Wait for successful job
+
+    # Without the if:, both jobs (QA + Prod) would always try to run whenever CI finishes.
+    if: github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: Download built Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: ./next-build
+
+      - name: Simulate QA deploy
+        run: echo "✅ QA deployment using artifact completed!"
+
+  deploy_production:
+    runs-on: ubuntu-latest
+    needs: ci-Next-App
+    
+    if: github.ref ==refs/heads/main
+
+    steps:
+      - name: Download built Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: ./next-build
+
+      - name: Simulate Production deploy
+        run: echo "🚀 Production deployment using artifact completed!"
+
+
+
+
+
+
+
