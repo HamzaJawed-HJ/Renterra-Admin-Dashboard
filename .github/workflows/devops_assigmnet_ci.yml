@@ -58,7 +58,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: .next
+          # path: .next
+          path: out
           include-hidden-files: true
 
   deploy_qa:
@@ -73,13 +74,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: ./next-build
+          path: ./out
 
       # for debugging purpose
       - name: Debug downloaded artifact
         run: |
           echo "Downloaded artifact contents:"
-          ls -la ./next-build
+          ls -la ./out
 
       - name: Simulate QA deploy
         run: echo "✅ QA deployment using artifact completed!"
@@ -95,13 +96,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: ./next-build
+          # path: ./next-build
+          path: ./out
 
       # for debugging purpose
       - name: Debug downloaded artifact
         run: |
           echo "Downloaded artifact contents:"
-          ls -la ./next-build
+          ls -la ./out
 
       - name: Simulate Production deploy
         run: echo "🚀 Production deployment using artifact completed!"
