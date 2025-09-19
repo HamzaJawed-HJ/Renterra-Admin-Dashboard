@@ -6,10 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: read        # Required to access repo files
-  pages: write           # Required to deploy to Pages
-  id-token: write 
+
 
 concurrency: 
   group: deploy-${{ github.ref }}
@@ -58,8 +55,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          # path: .next
-          path: out
+          path: .next
           include-hidden-files: true
 
   deploy_qa:
@@ -74,13 +70,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: ./out
+          path: ./next-build
 
       # for debugging purpose
       - name: Debug downloaded artifact
         run: |
           echo "Downloaded artifact contents:"
-          ls -la ./out
+          ls -la ./next-build
 
       - name: Simulate QA deploy
         run: echo "✅ QA deployment using artifact completed!"
@@ -96,25 +92,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          # path: ./next-build
-          path: ./out
+          path: ./next-build
 
       # for debugging purpose
       - name: Debug downloaded artifact
         run: |
           echo "Downloaded artifact contents:"
-          ls -la ./out
+          ls -la ./next-build
 
       - name: Simulate Production deploy
         run: echo "🚀 Production deployment using artifact completed!"
 
       - name: Notify Slack (Simulated)
         run: echo "📢 Slack notification sent':' Production deployment successful for ${{ github.ref_name }}!"
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
-        with:
-          folder: out             # folder containing static HTML
 
 
 
