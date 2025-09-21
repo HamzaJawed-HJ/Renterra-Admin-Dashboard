@@ -94,11 +94,23 @@ jobs:
           name: next-build
           path: ./next-build
 
+
+
       # for debugging purpose
       - name: Debug downloaded artifact
         run: |
           echo "Downloaded artifact contents:"
           ls -la ./next-build
+
+      - name: Deploy to Netlify (Production)
+        uses: nwtgck/actions-netlify@v2
+        with:
+          publish-dir: .next
+          deploy-message: "Deploy from GitHub Actions"
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
       - name: Simulate Production deploy
         run: echo "🚀 Production deployment using artifact completed!"
