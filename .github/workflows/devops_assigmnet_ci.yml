@@ -86,6 +86,7 @@ jobs:
     needs: ci-Next-App
     
     if: github.ref == 'refs/heads/main'
+    environment: Netlify_Enviroment   # 👈 This is required
 
     steps:
       - name: Download built Artifact
