@@ -106,7 +106,7 @@ jobs:
       - name: Deploy to Netlify (Production)
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: .next
+          publish-dir: ./next-build
           deploy-message: "Deploy from GitHub Actions"
           production-deploy: true
         env:
