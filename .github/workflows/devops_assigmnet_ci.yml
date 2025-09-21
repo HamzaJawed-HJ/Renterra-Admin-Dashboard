@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: .next
+          path: out
           include-hidden-files: true
 
   deploy_qa:
@@ -106,7 +106,7 @@ jobs:
       - name: Deploy to Netlify (Production)
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: ./next-build/.next
+          publish-dir: ./next-build
           deploy-message: "Deploy from GitHub Actions"
           production-deploy: true
         env:
